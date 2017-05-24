@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.platform     = :ios, "8.0"  
   s.source       = { :git => "https://github.com/900116/GodEyeClear.git", :tag => s.version }  
   s.source_files  = "Classes/**/*"
-  s.resouces = "Assets/*.png"
+  s.resource = "Assets/*.png"
   s.framework  = "UIKit"  
   s.requires_arc = true   
   s.dependency 'ANREye', '~> 1.1.2'

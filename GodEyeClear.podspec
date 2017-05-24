@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|  
   
   s.name         = "GodEyeClear"  
-  s.version      = "0.1"  
+  s.version      = "0.2"  
   s.summary      = "A Clear Gods Eye."  
   s.homepage     = "https://github.com/900116/GodEyeClear.git"  
   s.license      = { :type => "MIT", :file => "LICENSE" }  

@@ -25,7 +25,10 @@ extension UIWindow {
         GodEyeController.shared.configuration = configuration
         
         let rect = CGRect(x: self.frame.size.width - 48, y: self.frame.size.height - 160, width: 48, height: 48)
-        let image = UIImage(named:"eye")
+        let bundlePath = Bundle.main.path(forResource: "GodEyeClear", ofType: "bundle")
+        let bundle = Bundle(path: bundlePath!)
+        let path = bundle?.path(forResource: "eye", ofType: "png")
+        let image = UIImage(contentsOfFile: path!)
         let btn = AssistiveButton(frame: rect, normalImage: image!)
         btn.didTap = { () -> () in
             if GodEyeController.shared.showing {

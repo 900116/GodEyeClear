@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|  
   
   s.name         = "GodEyeClear"  
-  s.version      = "0.2.0"  
+  s.version      = "0.2"  
   s.summary      = "A Clear Gods Eye."  
   s.homepage     = "https://github.com/900116/GodEyeClear.git"  
   s.license      = { :type => "MIT", :file => "LICENSE" }  
@@ -9,7 +9,9 @@ Pod::Spec.new do |s|
   s.platform     = :ios, "8.0"  
   s.source       = { :git => "https://github.com/900116/GodEyeClear.git", :tag => s.version }  
   s.source_files  = "Classes/**/*"
-  s.resource = "Resource/GodEyeClear.bundle"
+  s.resource = {
+     'GodEyeClear' => ['Assets/*']
+  }
   s.framework  = "UIKit"  
   s.requires_arc = true   
   s.dependency 'ANREye', '~> 1.1.2'

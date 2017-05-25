@@ -38,6 +38,10 @@ extension NSObject {
         if level >= 5 {
             return
         }
+    
+        if self.classForCoder == NSClassFromString("TK_IGS_iPad_Swift.CustomTextField"){
+            return
+        }
         
         var monitorVariables = [String]()
         

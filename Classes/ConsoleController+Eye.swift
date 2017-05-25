@@ -11,7 +11,6 @@ import ASLEye
 import CrashEye
 import ANREye
 import Log4G
-import LeakEye
 import NetworkEye
 import AppBaseKit
 
@@ -26,7 +25,7 @@ extension ConsoleController {
         if defaultSwitch.log4g { EyesManager.shared.openLog4GEye() }
         if defaultSwitch.crash { EyesManager.shared.openCrashEye() }
         if defaultSwitch.network { EyesManager.shared.openNetworkEye() }
-//        if defaultSwitch.anr { EyesManager.shared.openANREye() }
+        if defaultSwitch.anr { EyesManager.shared.openANREye() }
         if defaultSwitch.leak { EyesManager.shared.openLeakEye() }
     }
     

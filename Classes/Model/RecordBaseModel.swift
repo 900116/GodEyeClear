@@ -19,6 +19,7 @@ protocol RecordORMProtocol : class {
     func attributeString() -> NSAttributedString
 }
 
+
 extension RecordORMProtocol {
     static func delete(complete:@escaping (_ success:Bool)->())  {
         
@@ -59,70 +60,42 @@ extension RecordORMProtocol {
         }
     }
     
-    static func select(at index:Int) -> [Self]? {
-//        let pagesize = 100
-//        let offset = pagesize * index + Self.addCount
-//        
-//        var select = self.configure(select: self.table.select(Self.col_id))
-//            .order(Self.col_id.desc)
-//            .limit(pagesize, offset: offset)
-//        
-//        do {
-//            if let sequence = try Self.connection?.prepare(select) {
-//                var result = [Self]()
-//                for row in sequence {
-//                    result.append(Self.mappingToObject(with: row))
-//                }
-//                return result.reversed()
-//            }
-//            return nil
-//        } catch {
-//            return nil
-//        }
-        let realm = try! Realm()
-        let arr = Array(realm.objects(CommandRecordModel)) as? [Self]
-        return arr
+    static func select(at index:Int,_ success:@escaping ([RecordORMProtocol]?)->()) {
+        DispatchQueue.main.async {
+            let realm:Realm = try! Realm()
+            let arr = Array(realm.objects(self.realClass as! Object.Type)) as? [Self]
+            DispatchQueue.main.async {
+                success(arr)
+            }
+        }
     }
     
     static func create() {
         
     }
-    
-//    fileprivate static var col_id:Expression<Int64> {
+
+//    fileprivate static var queue: DispatchQueue {
 //        get {
 //            var key = "\(#file)+\(#line)"
-//            guard let result = objc_getAssociatedObject(self, &key) as? Expression<Int64> else {
-//                let result = Expression<Int64>("id")
+//            guard let result = objc_getAssociatedObject(self, &key) as? DispatchQueue else {
+//                let result = DispatchQueue(label: "RecordDB")
 //                objc_setAssociatedObject(self, &key, result, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
 //                return result
 //            }
 //            return result
 //        }
 //    }
-    
+//    
     func insert(complete:@escaping (_ success:Bool)->()) {
-        let realm = try! Realm()
-        try! realm.write {
-            realm.add(self as! Object)
+        DispatchQueue.main.async {
+            let realm:Realm = try! Realm()
+            try! realm.write {
+                realm.add(self as! Object)
+            }
+            DispatchQueue.main.async {
+                complete(true)
+            }
         }
-        complete(true)
-        
-//
-//        
-//        let insert = Self.table.insert(self.mappingToRelation())
-//        
-//        Self.queue.async {
-//            do {
-//                let rowid = try Self.connection?.run(insert)
-//            }catch {
-//                DispatchQueue.main.async {
-//                    complete(false)
-//                }
-//            }
-//            DispatchQueue.main.async {
-//                complete(true)
-//            }
-//        }
     }
     
     

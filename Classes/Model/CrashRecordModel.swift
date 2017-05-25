@@ -13,15 +13,15 @@ import Realm
 
 final class CrashRecordModel: Object {
     
-    open var type: CrashModelType!
-    dynamic open var name: String!
-    dynamic open var reason: String!
-    dynamic open var appinfo: String!
-    dynamic open var callStack: String!
+    dynamic open var type: String?
+    dynamic open var name: String?
+    dynamic open var reason: String?
+    dynamic open var appinfo: String?
+    dynamic open var callStack: String?
     
     init(model:CrashModel) {
         super.init()
-        self.type = model.type
+        self.type = "\(model.type)"
         self.name = model.name
         self.reason = model.reason
         self.appinfo = model.appinfo
@@ -30,7 +30,7 @@ final class CrashRecordModel: Object {
     
     init(type:CrashModelType, name:String, reason:String, appinfo:String,callStack:String) {
         super.init()
-        self.type = type
+        self.type = "\(type)"
         self.name = name
         self.reason = reason
         self.appinfo = appinfo
@@ -68,7 +68,7 @@ extension CrashRecordModel: RecordORMProtocol{
     }
     
     private func headerString() -> NSAttributedString {
-        let type = self.type == .exception ? "Exception" : "SIGNAL"
+        let type = self.type == "\(CrashModelType.exception.rawValue)" ? "Exception" : "SIGNAL"
         return self.headerString(with: "CRASH", content: type, color: UIColor(hex: 0xDF1921))
     }
     

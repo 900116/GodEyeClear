@@ -97,7 +97,6 @@ extension NetworkRecordModel : RecordORMProtocol {
     func attributeString() -> NSAttributedString {
         
         let result = NSMutableAttributedString()
-        
         result.append(self.headerString())
         result.append(self.requestURLStringShow())
         
@@ -334,7 +333,10 @@ extension NetworkRecordModel {
         }
         
         do {
-            let returnValue = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+            var returnValue = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+            if ((returnValue as? NSNumber) != nil) {
+                return "\(returnValue)"
+            }
             let data = try JSONSerialization.data(withJSONObject: returnValue)
             return String(data: data, encoding: .utf8)
         } catch  {

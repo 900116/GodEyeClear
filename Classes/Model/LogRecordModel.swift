@@ -11,24 +11,12 @@ import Log4G
 import RealmSwift
 import Realm
 
-enum LogRecordModelType:Int {
-    case asl = 1
-    case log = 2
-    case warning = 3
-    case error = 4
-    
-    func string() -> String {
-        switch self {
-        case .asl:
-            return "ASL"
-        case .log:
-            return "LOG"
-        case .warning:
-            return "WARNING"
-        case .error:
-            return "ERROR"
-        }
-    }
+enum LogRecordModelType:String {
+    case asl = "ASL"
+    case log = "LOG"
+    case warning = "WARNING"
+    case error = "ERROR"
+
     
     func color() -> UIColor {
         switch self {
@@ -46,7 +34,7 @@ enum LogRecordModelType:Int {
 
 
 final class LogRecordModel: Object {
-    open var type: LogRecordModelType!
+    dynamic open var type: String = "ASL"
     /// date for Time stamp
     dynamic open var date: String?
     
@@ -57,21 +45,21 @@ final class LogRecordModel: Object {
     dynamic open var file: String?
     
     /// number of line in source code file
-    open var line: Int?
+    dynamic open var line: String?
     
     /// name of the function which log the message
     dynamic open var function: String?
     
     /// message be logged
-    dynamic open var message: String!
+    dynamic open var message: String?
     
     init(model:LogModel) {
         super.init()
-        self.type = self.type(of: model.type)
+        self.type = self.type(of: model.type).rawValue
         self.date = model.date.string(with: "yyyy-MM-dd HH:mm:ss")
         self.thread = model.thread.threadName
         self.file = model.file
-        self.line = model.line
+        self.line = "\(model.line)"
         self.function = model.function
         self.message = model.message
     }
@@ -84,12 +72,12 @@ final class LogRecordModel: Object {
          line: Int? = nil,
          function: String? = nil) {
         super.init()
-        self.type = type
+        self.type = type.rawValue
         self.message = message
         self.date = date
         self.thread = thread
         self.file = file
-        self.line = line
+        self.line = "\(String(describing: line))"
         self.function = function
     }
     
@@ -132,21 +120,22 @@ extension LogRecordModel: RecordORMProtocol
     }
     
     private func headerString() -> NSAttributedString {
-        return self.headerString(with: self.type.string(), content: self.message, color: self.type.color())
+        let logType = LogRecordModelType(rawValue: self.type)
+        return self.headerString(with:self.type, content: self.message, color:logType!.color())
     }
     
     private func additionString() ->NSAttributedString? {
-        if self.type == .asl {
+        if self.type == LogRecordModelType.asl.rawValue {
             return nil
         }
         
         let date = self.date ?? ""
         let thread = self.thread ?? ""
         let file = self.file ?? ""
-        let line = self.line ?? -1
+        let line = self.line ?? "-1"
         let function = self.function ?? ""
         
-        var content: String = "[\(file): \(line)](\(function)) \(date) -> \(thread)"
+        let content: String = "[\(file): \(line)](\(function)) \(date) -> \(thread)"
         let result = NSMutableAttributedString(attributedString: self.contentString(with: nil, content: content))
         let  range = result.string.NS.range(of: content)
         if range.location != NSNotFound {

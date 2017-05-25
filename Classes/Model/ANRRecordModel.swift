@@ -12,13 +12,13 @@ import Realm
 
 final class ANRRecordModel: Object {
     
-    open var threshold: Double!
+    dynamic open var threshold: String?
     dynamic open var mainThreadBacktrace:String?
     dynamic open var allThreadBacktrace:String?
     
     init(threshold:Double,mainThreadBacktrace:String?,allThreadBacktrace:String?) {
         super.init()
-        self.threshold = threshold
+        self.threshold = "\(threshold)"
         self.mainThreadBacktrace = mainThreadBacktrace
         self.allThreadBacktrace = allThreadBacktrace
     }

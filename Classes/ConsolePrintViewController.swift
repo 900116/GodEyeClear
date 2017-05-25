@@ -47,11 +47,12 @@ class ConsolePrintViewController: UIViewController {
                 return
             }
             
-            let result = sself.dataSource.loadPrePage()
+            sself.dataSource.loadPrePage{ result in
             if result == true {
                 sself.recordTableView.reloadData()
             }
-            sself.recordTableView.mj_header.endRefreshing()
+                sself.recordTableView.mj_header.endRefreshing()
+            }
         })
         
         NotificationCenter.default.addObserver(self,

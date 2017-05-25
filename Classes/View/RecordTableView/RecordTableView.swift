@@ -64,22 +64,25 @@ class RecordTableViewDataSource: NSObject {
         self.type = type
         
         self.type.model()?.addCount = 0
-        self.recordData = self.currentPageModel() ?? [RecordORMProtocol]()
+        self.recordData = []
+        self.currentPageModel { (result:[RecordORMProtocol]?) in
+            self.recordData = result
+        }
     }
     
-    private func currentPageModel() -> [RecordORMProtocol]? {
+    private func currentPageModel(_ success:@escaping ([RecordORMProtocol]?)->()){
         if self.type == RecordType.log {
-            return LogRecordModel.select(at: self.logIndex)
+            return LogRecordModel.select(at: self.logIndex,success)
         }else if self.type == RecordType.crash {
-            return CrashRecordModel.select(at: self.logIndex)
+            return CrashRecordModel.select(at: self.logIndex,success)
         }else if self.type == .network {
-            return NetworkRecordModel.select(at: self.logIndex)
+            return NetworkRecordModel.select(at: self.logIndex,success)
         }else if self.type == .anr {
-            return ANRRecordModel.select(at: self.logIndex)
+            return ANRRecordModel.select(at: self.logIndex,success)
         }else if self.type == .command {
-            return CommandRecordModel.select(at: self.logIndex)
+            return CommandRecordModel.select(at: self.logIndex,success)
         }else if self.type == .leak {
-            return LeakRecordModel.select(at: self.logIndex)
+            return LeakRecordModel.select(at: self.logIndex,success)
         }
         
         fatalError("type:\(self.type) not define the database")
@@ -89,35 +92,37 @@ class RecordTableViewDataSource: NSObject {
         self.type.model()?.addCount += 1
     }
     
-    func loadPrePage() -> Bool {
+    func loadPrePage(_ success:@escaping (Bool)->()){
         self.logIndex += 1
-        
-        guard let models = self.currentPageModel() else {
-            return false
+        self.currentPageModel { (result:[RecordORMProtocol]?) in
+            guard let models = result else{
+                success(false)
+                return
+            }
+            guard (result!.count) > 0 else {
+                success(false)
+                return
+            }
+            for model in models.reversed() {
+                self.recordData.insert(model, at: 0)
+            }
+            success(true)
         }
-        
-        guard models.count != 0 else {
-            return false
-        }
-        
-        for model in models.reversed() {
-            self.recordData.insert(model, at: 0)
-        }
-        return true
     }
     
     func addRecord(model:RecordORMProtocol) {
-        
-        if self.recordData.count != 0 &&
-            type(of: model).type != self.type {
-            return
+        DispatchQueue.main.async {
+            if self.recordData.count != 0 &&
+                type(of: model).type != self.type {
+                return
+            }
+            
+            self.recordData.append(model)
+            if self.recordData.count > self.maxLogItems {
+                self.recordData.remove(at: 0)
+            }
+            self.addCount()   
         }
-        
-        self.recordData.append(model)
-        if self.recordData.count > self.maxLogItems {
-            self.recordData.remove(at: 0)
-        }
-        self.addCount()
     }
     
     func cleanRecord() {

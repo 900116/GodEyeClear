@@ -20,6 +20,7 @@ class ConsolePrintViewController: UIViewController {
         
         self.type = type
         self.dataSource = RecordTableViewDataSource(type: type)
+        self.recordTableView.reloadData()
     }
     
     required init?(coder aDecoder: NSCoder) {

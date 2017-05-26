@@ -74,10 +74,10 @@ extension RecordORMProtocol {
         return try! Realm(fileURL: URL(fileURLWithPath: dbPath))
     }
     
-    static func select(at index:Int,_ success:@escaping ([RecordORMProtocol]?)->()) {
+    static func select(at index:Int,_ success:@escaping ([Any]?)->()) {
         DispatchQueue.main.async {
             let realm:Realm = self.getRealm()
-            let arr = Array(realm.objects(self.realClass as! Object.Type)) as? [Self]
+            let arr = Array<Object>(realm.objects(self.realClass as! Object.Type))
             DispatchQueue.main.async {
                 success(arr)
             }

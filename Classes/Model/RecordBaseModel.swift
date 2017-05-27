@@ -60,7 +60,7 @@ extension RecordORMProtocol {
         }
     }
     
-    static func getRealm() -> Realm
+    static func getRealm() -> Realm?
     {
         let documentPaths = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory,
                                                                              FileManager.SearchPathDomainMask.userDomainMask, true)
@@ -71,15 +71,17 @@ extension RecordORMProtocol {
         }
         
         let dbPath = dirPath + "/Realm.sqlite"
-        return try! Realm(fileURL: URL(fileURLWithPath: dbPath))
+        return try? Realm(fileURL: URL(fileURLWithPath: dbPath))
     }
     
-    static func select(at index:Int,_ success:@escaping ([Any]?)->()) {
+    static func select(at index:Int,_ success:@escaping ([RecordORMProtocol]?)->()) {
         DispatchQueue.main.async {
-            let realm:Realm = self.getRealm()
-            let arr = Array<Object>(realm.objects(self.realClass as! Object.Type))
-            DispatchQueue.main.async {
-                success(arr)
+            let realm:Realm? = self.getRealm()
+            if realm != nil {
+                let arr = Array(realm!.objects(self.realClass as! Object.Type)) as? [Self]
+                DispatchQueue.main.async {
+                    success(arr)
+                }
             }
         }
     }
@@ -99,15 +101,31 @@ extension RecordORMProtocol {
 //            return result
 //        }
 //    }
-//    
+//
+    
+    func insertSync() -> Bool {
+        let realm:Realm? = Self.getRealm()
+        if realm != nil{
+            try! realm?.write {
+                realm?.add(self as! Object)
+            }
+            return true
+        }
+        else {
+            return false
+        }
+    }
+    
     func insert(complete:@escaping (_ success:Bool)->()) {
         DispatchQueue.main.async {
-            let realm:Realm = Self.getRealm()
-            try! realm.write {
-                realm.add(self as! Object)
-            }
-            DispatchQueue.main.async {
-                complete(true)
+            let realm:Realm? = Self.getRealm()
+            if realm != nil {
+                try! realm?.write {
+                    realm?.add(self as! Object)
+                }
+                DispatchQueue.main.async {
+                    complete(true)
+                }
             }
         }
     }

@@ -74,9 +74,10 @@ extension ConsoleController: CrashEyeDelegate {
     /// god's crash eye callback
     func crashEyeDidCatchCrash(with model:CrashModel) {
         let model = CrashRecordModel(model: model)
-        model.insert(complete: { [unowned self] (success:Bool) in
+        let success:Bool = model.insertSync();
+        if success {
             self.addRecord(model: model)
-        })
+        }
     }
 }
 

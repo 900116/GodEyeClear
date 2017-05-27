@@ -65,12 +65,12 @@ class RecordTableViewDataSource: NSObject {
         
         self.type.model()?.addCount = 0
         self.recordData = []
-        self.currentPageModel { (result:[Any]?) in
-            self.recordData = result as! [RecordORMProtocol]!
+        self.currentPageModel { (result:[RecordORMProtocol]?) in
+            self.recordData = result
         }
     }
     
-    private func currentPageModel(_ success:@escaping ([Any]?)->()){
+    private func currentPageModel(_ success:@escaping ([RecordORMProtocol]?)->()){
         if self.type == RecordType.log {
             return LogRecordModel.select(at: self.logIndex,success)
         }else if self.type == RecordType.crash {
@@ -94,7 +94,7 @@ class RecordTableViewDataSource: NSObject {
     
     func loadPrePage(_ success:@escaping (Bool)->()){
         self.logIndex += 1
-        self.currentPageModel { (result:[Any]?) in
+        self.currentPageModel { (result:[RecordORMProtocol]?) in
             guard let models = result else{
                 success(false)
                 return
@@ -104,7 +104,7 @@ class RecordTableViewDataSource: NSObject {
                 return
             }
             for model in models.reversed() {
-                self.recordData.insert(model as! RecordORMProtocol, at: 0)
+                self.recordData.insert(model, at: 0)
             }
             success(true)
         }

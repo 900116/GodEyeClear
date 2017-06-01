@@ -66,8 +66,9 @@ class RecordTableViewDataSource: NSObject {
         self.type.model()?.addCount = 0
         self.recordData = []
         self.totalData = []
-        self.currentPageModel { (result:[RecordORMProtocol]?) in
-            self.totalData = result!.reversed()
+        self.currentPageModel { (result:[Any]?) in
+            let protocol_arr = result as! [RecordORMProtocol]
+            self.totalData = protocol_arr.reversed()
             self.refreshDataWithIndex(index: self.logIndex)
         }
     }
@@ -88,7 +89,7 @@ class RecordTableViewDataSource: NSObject {
         
     }
     
-    private func currentPageModel(_ success:@escaping ([RecordORMProtocol]?)->()){
+    private func currentPageModel(_ success:@escaping ([Any]?)->()){
         if self.type == RecordType.log {
             return LogRecordModel.select(at: self.logIndex,success)
         }else if self.type == RecordType.crash {

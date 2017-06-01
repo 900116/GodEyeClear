@@ -56,7 +56,7 @@ class RecordTableViewDataSource: NSObject {
     private let maxLogItems: Int = 1000
     
     fileprivate(set) var recordData: [RecordORMProtocol]!
-    
+    var totalData:[RecordORMProtocol]!
     private var logIndex: Int = 0
     fileprivate var type: RecordType!
     init(type:RecordType) {
@@ -65,9 +65,27 @@ class RecordTableViewDataSource: NSObject {
         
         self.type.model()?.addCount = 0
         self.recordData = []
+        self.totalData = []
         self.currentPageModel { (result:[RecordORMProtocol]?) in
-            self.recordData = result
+            self.totalData = result!.reversed()
+            self.refreshDataWithIndex(index: self.logIndex)
         }
+    }
+    
+    private func refreshDataWithIndex(index:Int){
+        let per_page = 10
+        let max_idx:Int = (per_page * (index+1) - 1)
+        if self.totalData.count > max_idx {
+            var tempArray = Array<RecordORMProtocol>()
+            for i in stride(from: 0, through: max_idx, by: 1){
+                tempArray.insert(self.totalData[i],at: 0)
+            }
+            self.recordData = tempArray
+        }
+        else {
+            self.recordData = self.totalData.reversed()
+        }
+        
     }
     
     private func currentPageModel(_ success:@escaping ([RecordORMProtocol]?)->()){
@@ -94,20 +112,22 @@ class RecordTableViewDataSource: NSObject {
     
     func loadPrePage(_ success:@escaping (Bool)->()){
         self.logIndex += 1
-        self.currentPageModel { (result:[RecordORMProtocol]?) in
-            guard let models = result else{
-                success(false)
-                return
-            }
-            guard (result!.count) > 0 else {
-                success(false)
-                return
-            }
-            for model in models.reversed() {
-                self.recordData.insert(model, at: 0)
-            }
-            success(true)
-        }
+        refreshDataWithIndex(index: self.logIndex)
+        success(true)
+//        self.currentPageModel { (result:[RecordORMProtocol]?) in
+//            guard let models = result else{
+//                success(false)
+//                return
+//            }
+//            guard (result!.count) > 0 else {
+//                success(false)
+//                return
+//            }
+//            for model in models.reversed() {
+//                self.recordData.insert(model, at: 0)
+//            }
+//            success(true)
+//        }
     }
     
     func addRecord(model:RecordORMProtocol) {

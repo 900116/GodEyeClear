@@ -83,6 +83,11 @@ extension RecordORMProtocol {
                     success(arr)
                 }
             }
+            else {
+                DispatchQueue.main.async {
+                    success([])
+                }
+            }
         }
     }
     

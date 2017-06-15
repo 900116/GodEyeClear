@@ -24,7 +24,7 @@ extension UIWindow {
     func makeEye(with configuration:Configuration) {
         GodEyeController.shared.configuration = configuration
         
-        let rect = CGRect(x: self.frame.size.width - 48, y: self.frame.size.height - 160, width: 48, height: 48)
+        let rect = CGRect(x: self.frame.size.width - 48, y: self.frame.size.height - 260, width: 48, height: 48)
         let bundle = Bundle(for: GodEyeController.self)
         let image = UIImage(named: "eye", in: bundle, compatibleWith: nil)
         let btn = AssistiveButton(frame: rect, normalImage: image!)
